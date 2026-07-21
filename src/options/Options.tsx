@@ -154,10 +154,10 @@ export default function Options() {
       </div>
 
       {/* Settings Layout */}
-      <div className="flex-grow w-full max-w-4xl mx-auto flex flex-col md:flex-row gap-8 p-6 md:p-12 z-10">
+      <div className="options-container" style={{ maxWidth: '1200px' }}>
         
         {/* Left Sidebar Navigation */}
-        <aside className="w-full md:w-60 flex flex-col gap-6">
+        <aside className="options-sidebar">
           <div className="flex items-center gap-2 px-2">
             <div className="h-8 w-8 rounded-full bg-primary-moss flex items-center justify-center text-white">
               <Sparkles className="h-4 w-4" />
@@ -231,8 +231,9 @@ export default function Options() {
           </nav>
         </aside>
 
-        {/* Right Details Panel */}
-        <main className="flex-grow card p-6 md:p-8 bg-bg-secondary bg-opacity-70 glass animate-fade-in border border-border-color" style={{ minHeight: '400px' }}>
+        {/* Right Details Panel Column */}
+        <div className="options-content-col">
+          <main className="card p-6 bg-bg-secondary bg-opacity-70 glass animate-fade-in border border-border-color options-main-card">
           
           {/* Panel 1: Blocker settings */}
           {activePanel === 'blocker' && (
@@ -601,13 +602,14 @@ export default function Options() {
             </div>
           )}
 
-        </main>
+          </main>
+          
+          {/* Footer centered under main content */}
+          <footer className="text-center py-4 text-text-tertiary" style={{ fontSize: '10px' }}>
+            <span>Made with ❤️ by ProjectAbide</span>
+          </footer>
+        </div>
       </div>
-
-      {/* Footer */}
-      <footer className="w-full text-center py-6 text-text-tertiary z-10 border-t border-border-color border-opacity-30 mt-auto" style={{ fontSize: '10px' }}>
-        <span>Made with ❤️ by ProjectAbide</span>
-      </footer>
     </div>
   );
 }
