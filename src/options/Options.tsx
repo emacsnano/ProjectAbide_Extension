@@ -24,6 +24,13 @@ export default function Options() {
   useEffect(() => {
     initTheme();
     loadSettings();
+
+    // Check URL parameters for active panel routing
+    const params = new URLSearchParams(window.location.search);
+    const tab = params.get('tab');
+    if (tab && ['blocker', 'bookmarks', 'stats', 'general', 'support'].includes(tab)) {
+      setActivePanel(tab as any);
+    }
   }, []);
 
   const loadSettings = async () => {

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { 
   Shield, ShieldAlert, Sparkles, Flame, Copy, Check, 
-  ExternalLink, Ban, Unlock, Settings
+  ExternalLink, Ban, Unlock, Settings, Heart
 } from 'lucide-react';
 import { getSettings, updateSettings, ExtensionSettings } from '../utils/storage';
 import { getVerseOfTheDay, Verse } from '../utils/bible';
@@ -106,10 +106,13 @@ export default function Popup() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const openFullPage = (page: 'newtab' | 'options') => {
-    const url = page === 'newtab' ? 'newtab.html' : 'options.html';
+  const openFullPage = (page: 'newtab' | 'options', tab?: string) => {
+    let url = page === 'newtab' ? 'newtab.html' : 'options.html';
+    if (tab) {
+      url += `?tab=${tab}`;
+    }
     if (typeof chrome !== 'undefined' && chrome.tabs) {
-      chrome.tabs.create({ url });
+      chrome.tabs.create({ url: chrome.runtime.getURL(url) });
     } else {
       window.open(url, '_blank');
     }
@@ -216,22 +219,38 @@ export default function Popup() {
       </div>
 
       {/* Footer launch controls */}
-      <div className="flex gap-2">
+      <div className="flex flex-col gap-2">
         <button 
-          onClick={() => openFullPage('newtab')}
-          className="btn btn-primary flex-1 py-2 text-xxs font-medium"
-          style={{ fontSize: '0.725rem' }}
+          onClick={() => openFullPage('options', 'support')}
+          className="btn btn-secondary w-full py-2 text-xxs font-medium flex items-center justify-center gap-1.5"
+          style={{ 
+            fontSize: '0.725rem', 
+            borderColor: 'var(--danger-light)', 
+            backgroundColor: 'var(--danger-light)', 
+            color: 'var(--danger)' 
+          }}
         >
-          <ExternalLink className="h-3.5 w-3.5" />
-          <span>Dashboard</span>
+          <Heart className="h-3.5 w-3.5 fill-current fill-opacity-20" />
+          <span>Support & Donate</span>
         </button>
-        <button 
-          onClick={() => openFullPage('options')}
-          className="btn btn-secondary py-2 px-2.5"
-          title="Settings"
-        >
-          <Settings className="h-3.5 w-3.5" />
-        </button>
+        
+        <div className="flex gap-2">
+          <button 
+            onClick={() => openFullPage('newtab')}
+            className="btn btn-primary flex-grow py-2 text-xxs font-medium"
+            style={{ fontSize: '0.725rem' }}
+          >
+            <ExternalLink className="h-3.5 w-3.5" />
+            <span>Dashboard</span>
+          </button>
+          <button 
+            onClick={() => openFullPage('options', 'general')}
+            className="btn btn-secondary py-2 px-2.5"
+            title="Settings"
+          >
+            <Settings className="h-3.5 w-3.5" />
+          </button>
+        </div>
       </div>
 
     </div>
