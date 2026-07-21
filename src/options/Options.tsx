@@ -51,6 +51,13 @@ export default function Options() {
       setBlockError('Please enter a valid website address.');
       return;
     }
+
+    // Validate domain format (e.g. website.com or sub.website.co)
+    const domainRegex = /^[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}$/i;
+    if (!domainRegex.test(domain)) {
+      setBlockError('Please enter a valid domain name (e.g., website.com).');
+      return;
+    }
     
     // Check if domain is already in list
     if (settings.blockedSites.includes(domain)) {

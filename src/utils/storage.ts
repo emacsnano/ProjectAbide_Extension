@@ -42,18 +42,23 @@ const DEFAULT_SETTINGS: ExtensionSettings = {
 
 const isExtension = typeof chrome !== 'undefined' && typeof chrome.storage !== 'undefined';
 
+const SYNC_KEYS = ['blockedSites', 'isBlockingEnabled', 'theme', 'translation', 'bypassDuration'];
+const LOCAL_KEYS = ['streak', 'lastNewTabVisit', 'bookmarks', 'journal', 'focusMinutes'];
+
 export async function getSettings(): Promise<ExtensionSettings> {
   if (isExtension) {
     return new Promise((resolve) => {
-      chrome.storage.sync.get(['settings'], (result) => {
-        if (result.settings) {
-          resolve({ ...DEFAULT_SETTINGS, ...result.settings });
-        } else {
-          // Initialize settings if they don't exist
-          chrome.storage.sync.set({ settings: DEFAULT_SETTINGS }, () => {
-            resolve(DEFAULT_SETTINGS);
+      chrome.storage.sync.get(['settings'], (syncResult) => {
+        chrome.storage.local.get(['localSettings'], (localResult) => {
+          const syncData = syncResult.settings || {};
+          const localData = localResult.localSettings || {};
+          
+          resolve({
+            ...DEFAULT_SETTINGS,
+            ...syncData,
+            ...localData
           });
-        }
+        });
       });
     });
   } else {
@@ -75,9 +80,33 @@ export async function updateSettings(updates: Partial<ExtensionSettings>): Promi
   const updated = { ...current, ...updates };
   
   if (isExtension) {
+    const syncUpdates: any = {};
+    const localUpdates: any = {};
+    
+    // Sort updates into their respective storage categories
+    for (const key of Object.keys(updates) as Array<keyof ExtensionSettings>) {
+      if (SYNC_KEYS.includes(key)) {
+        syncUpdates[key] = updates[key];
+      } else if (LOCAL_KEYS.includes(key)) {
+        localUpdates[key] = updates[key];
+      }
+    }
+    
     return new Promise((resolve) => {
-      chrome.storage.sync.set({ settings: updated }, () => {
-        resolve(updated);
+      chrome.storage.sync.get(['settings'], (syncResult) => {
+        chrome.storage.local.get(['localSettings'], (localResult) => {
+          const currentSync = syncResult.settings || {};
+          const currentLocal = localResult.localSettings || {};
+          
+          const newSync = { ...currentSync, ...syncUpdates };
+          const newLocal = { ...currentLocal, ...localUpdates };
+          
+          chrome.storage.sync.set({ settings: newSync }, () => {
+            chrome.storage.local.set({ localSettings: newLocal }, () => {
+              resolve(updated);
+            });
+          });
+        });
       });
     });
   } else {
