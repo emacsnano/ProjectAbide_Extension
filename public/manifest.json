@@ -1,0 +1,26 @@
+{
+  "manifest_version": 3,
+  "name": "ProjectAbide",
+  "version": "1.0.0",
+  "description": "A serene, scripture-centered extension to build focus, reflect, and cultivate intentional browsing habits.",
+  "permissions": [
+    "storage",
+    "declarativeNetRequest",
+    "alarms",
+    "tabs"
+  ],
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+  "action": {
+    "default_popup": "popup.html"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
+  "chrome_url_overrides": {
+    "newtab": "newtab.html"
+  }
+}
