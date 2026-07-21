@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { 
   Shield, Bookmark, BarChart3, Settings, Plus, Trash2, 
   Copy, Check, Sun, Moon, Monitor, Sparkles, 
-  CheckSquare, Award, Flame, Hourglass, Globe
+  CheckSquare, Award, Flame, Hourglass, Globe, Heart
 } from 'lucide-react';
 import { 
   getSettings, updateSettings, ExtensionSettings, 
@@ -12,7 +12,7 @@ import { applyTheme, initTheme } from '../utils/theme';
 
 export default function Options() {
   const [settings, setSettings] = useState<ExtensionSettings | null>(null);
-  const [activePanel, setActivePanel] = useState<'blocker' | 'bookmarks' | 'stats' | 'general'>('blocker');
+  const [activePanel, setActivePanel] = useState<'blocker' | 'bookmarks' | 'stats' | 'general' | 'support'>('blocker');
   
   // Blocker panel state
   const [newSiteInput, setNewSiteInput] = useState('');
@@ -201,6 +201,18 @@ export default function Options() {
             >
               <Settings className="h-4 w-4" />
               <span>App Preferences</span>
+            </button>
+            
+            <button 
+              onClick={() => setActivePanel('support')}
+              className={`flex items-center gap-3 px-4 py-3 rounded-lg text-xs font-medium text-left transition-all ${
+                activePanel === 'support' 
+                  ? 'bg-primary-moss-light text-primary-moss font-semibold border-l-4 border-primary-moss' 
+                  : 'bg-transparent text-text-secondary hover:text-text-primary hover:bg-bg-secondary'
+              }`}
+            >
+              <Heart className="h-4 w-4" />
+              <span>Support & Donate</span>
             </button>
           </nav>
         </aside>
@@ -515,8 +527,73 @@ export default function Options() {
             </div>
           )}
 
+          {/* Panel 5: Support & Donate */}
+          {activePanel === 'support' && (
+            <div className="flex flex-col gap-6 animate-fade-in">
+              <div>
+                <h2 className="font-display font-medium text-lg text-primary flex items-center gap-2">
+                  <Heart className="h-5 w-5 text-primary-moss fill-current fill-opacity-20" />
+                  Support ProjectAbide
+                </h2>
+                <p className="text-xs text-text-secondary mt-1">
+                  ProjectAbide is 100% free and open source. If this extension has helped you build focus and connect with scripture, consider supporting its development!
+                </p>
+              </div>
+
+              {/* Donation Options Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <a 
+                  href="https://www.buymeacoffee.com/projectabide" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="p-4 rounded-lg bg-bg-primary bg-opacity-50 border border-border-color hover:border-accent-gold transition-all flex flex-col gap-2 cursor-pointer group"
+                >
+                  <span className="text-sm font-semibold text-primary group-hover:text-accent-gold transition-colors">☕ Buy Me a Coffee</span>
+                  <span className="text-text-tertiary" style={{ fontSize: '10px' }}>Support with a small one-time gift of coffee.</span>
+                </a>
+                
+                <a 
+                  href="https://ko-fi.com/projectabide" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="p-4 rounded-lg bg-bg-primary bg-opacity-50 border border-border-color hover:border-primary-moss transition-all flex flex-col gap-2 cursor-pointer group"
+                >
+                  <span className="text-sm font-semibold text-primary group-hover:text-primary-moss transition-colors">❤️ Support on Ko-fi</span>
+                  <span className="text-text-tertiary" style={{ fontSize: '10px' }}>Support with a one-time gift or monthly pledge.</span>
+                </a>
+
+                <a 
+                  href="https://www.paypal.me/projectabide" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="p-4 rounded-lg bg-bg-primary bg-opacity-50 border border-border-color hover:border-primary-moss transition-all flex flex-col gap-2 cursor-pointer group"
+                >
+                  <span className="text-sm font-semibold text-primary group-hover:text-primary-moss transition-colors">💳 PayPal Secure</span>
+                  <span className="text-text-tertiary" style={{ fontSize: '10px' }}>Direct, secure one-time donations via PayPal.</span>
+                </a>
+
+                <div 
+                  className="p-4 rounded-lg bg-primary-moss bg-opacity-5 border border-primary-moss border-opacity-20 flex flex-col gap-2"
+                >
+                  <span className="text-sm font-semibold text-primary-moss">⭐ Leave a Review</span>
+                  <span className="text-text-secondary" style={{ fontSize: '10px' }}>Giving a 5-star review on the Chrome Web Store helps others discover ProjectAbide!</span>
+                </div>
+              </div>
+
+              {/* Dev Note */}
+              <div className="p-4 rounded-lg bg-bg-primary bg-opacity-30 border border-border-color text-center font-serif italic text-xs text-text-secondary mt-2">
+                "Each one must give as he has decided in his heart, not reluctantly or under compulsion, for God loves a cheerful giver." — 2 Corinthians 9:7
+              </div>
+            </div>
+          )}
+
         </main>
       </div>
+
+      {/* Footer */}
+      <footer className="w-full text-center py-6 text-text-tertiary z-10 border-t border-border-color border-opacity-30 mt-auto" style={{ fontSize: '10px' }}>
+        <span>Made with ❤️ by ProjectAbide</span>
+      </footer>
     </div>
   );
 }
