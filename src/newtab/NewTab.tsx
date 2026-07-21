@@ -48,10 +48,13 @@ export default function NewTab() {
     const data = await getSettings();
     setSettings(data);
     
+    // Load daily verse with selected translation
+    const verseToDisplay = getVerseOfTheDay(data.translation || 'NIV');
+    setDailyVerse(verseToDisplay);
+    
     // Check if daily verse is bookmarked
-    const currentDaily = getVerseOfTheDay();
     const isBookmarked = data.bookmarks.some(
-      b => b.reference === currentDaily.reference && b.verse === currentDaily.verse
+      b => b.reference === verseToDisplay.reference && b.verse === verseToDisplay.verse
     );
     setIsDailyBookmarked(isBookmarked);
     
@@ -271,8 +274,13 @@ export default function NewTab() {
         <blockquote className="text-center font-serif text-xl md:text-3xl leading-relaxed max-w-2xl mx-auto mb-6 text-primary">
           "{dailyVerse.verse}"
         </blockquote>
-        <cite className="text-center not-italic font-display text-sm md:text-base text-accent-gold font-medium mb-8 block">
-          — {dailyVerse.reference}
+        <cite className="text-center not-italic font-display text-sm md:text-base text-accent-gold font-medium mb-8 flex items-center justify-center gap-2">
+          <span>— {dailyVerse.reference}</span>
+          {settings && (
+            <span className="badge-translation">
+              {settings.translation || 'NIV'}
+            </span>
+          )}
         </cite>
 
         <div className="flex gap-3 justify-center mb-12">

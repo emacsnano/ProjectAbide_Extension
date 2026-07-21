@@ -388,4 +388,19 @@ a:hover {
 .cursor-pointer { cursor: pointer; }
 .select-none { user-select: none; }
 
+.badge-translation {
+  display: inline-block;
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  text-transform: uppercase;
+  background-color: var(--primary-moss-light);
+  color: var(--primary-moss);
+  letter-spacing: 0.05em;
+  line-height: 1.2;
+  vertical-align: middle;
+}
+
+
 

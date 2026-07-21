@@ -26,8 +26,9 @@ export default function Popup() {
     const data = await getSettings();
     setSettings(data);
     
-    // 2. Load daily verse
-    setDailyVerse(getVerseOfTheDay());
+    // 2. Load daily verse with selected translation
+    const verseToDisplay = getVerseOfTheDay(data.translation || 'NIV');
+    setDailyVerse(verseToDisplay);
 
     // 3. Inspect current tab domain
     if (typeof chrome !== 'undefined' && chrome.tabs) {
@@ -195,7 +196,14 @@ export default function Popup() {
           "{dailyVerse.verse}"
         </p>
         <div className="flex justify-between items-center mt-1 pt-1 border-t border-border-color border-opacity-50">
-          <span className="text-accent-gold font-medium" style={{ fontSize: '10px' }}>{dailyVerse.reference}</span>
+          <div className="flex items-center gap-1.5">
+            <span className="text-accent-gold font-medium" style={{ fontSize: '10px' }}>{dailyVerse.reference}</span>
+            {settings && (
+              <span className="badge-translation" style={{ fontSize: '8px', padding: '1px 4px' }}>
+                {settings.translation || 'NIV'}
+              </span>
+            )}
+          </div>
           <button 
             onClick={handleCopyText}
             className="text-text-secondary hover:text-text-primary flex items-center gap-0.5 bg-transparent border-none cursor-pointer"

@@ -11,12 +11,20 @@ export interface SearchVerse extends Verse {
   tags: string[];
 }
 
-export function getVerseOfTheDay(): Verse {
+export function getVerseOfTheDay(translation: string = 'NIV'): Verse {
   const today = new Date();
   // Generate a stable index based on date (year, month, day) so it updates exactly at midnight
   const dateInt = today.getFullYear() * 10000 + (today.getMonth() + 1) * 100 + today.getDate();
   const index = dateInt % dailyVerses.length;
-  return dailyVerses[index];
+  const verseEntry = dailyVerses[index];
+  
+  const translations = (verseEntry as any).translations || {};
+  const verseText = translations[translation.toUpperCase()] || translations['NIV'] || (verseEntry as any).verse || "";
+  
+  return {
+    reference: verseEntry.reference,
+    verse: verseText
+  };
 }
 
 export function getAllCategories(): string[] {
@@ -61,4 +69,21 @@ export function getRandomVerseFromCategory(category: string): SearchVerse {
   }
   const randomIndex = Math.floor(Math.random() * filtered.length);
   return filtered[randomIndex];
+}
+
+export async function fetchTranslation(baseVerse: Verse, translation: string): Promise<Verse> {
+  try {
+    const cleanRef = baseVerse.reference.replace(/\s*[A-Z]{3,4}$/i, '');
+    const response = await fetch(`https://bible-api.com/${encodeURIComponent(cleanRef)}?translation=${translation.toLowerCase()}`);
+    if (response.ok) {
+      const resData = await response.json();
+      return {
+        reference: `${resData.reference} (${translation.toUpperCase()})`,
+        verse: resData.text.trim().replace(/\n/g, ' ')
+      };
+    }
+  } catch (e) {
+    console.warn('Could not fetch online translation, falling back to offline database:', e);
+  }
+  return baseVerse;
 }
