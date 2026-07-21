@@ -1,4 +1,4 @@
-# ProjectAbide Chrome Extension
+# ProjectAbide Web Extension
 
 A serene, scripture-centered Chrome extension designed to help you stay focused, pause and reflect on God's Word daily, and practice intentional browsing habits.
 
