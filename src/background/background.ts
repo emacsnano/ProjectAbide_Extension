@@ -22,42 +22,28 @@ async function syncRules() {
     const newRules: chrome.declarativeNetRequest.Rule[] = [];
 
     if (settings.isBlockingEnabled) {
-      let ruleId = 1;
-      
-      for (const site of settings.blockedSites) {
-        // Normalize the domain
-        const cleanSite = site.trim().replace(/^(https?:\/\/)?(www\.)?/, '').split('/')[0];
-        if (!cleanSite) continue;
+      const sitesToBlock = settings.blockedSites
+        .map(site => site.trim().replace(/^(https?:\/\/)?(www\.)?/, '').split('/')[0])
+        .filter(site => site && !bypassedDomains.has(site));
 
-        // Skip adding block rule if there is an active temporary bypass
-        if (bypassedDomains.has(cleanSite)) {
-          continue;
-        }
+      if (sitesToBlock.length > 0) {
+        // Escape periods for regex matching
+        const escapedSites = sitesToBlock.map(site => site.replace(/\./g, '\\.'));
+        // Matches the base domain or any of its subdomains (like www. or m.)
+        const regexFilter = `^https?://(?:[^/]+\\.)?(${escapedSites.join('|')})(/.*|$)`;
+        const extId = chrome.runtime.id;
 
-        // Rule for direct domain access (e.g. example.com)
         newRules.push({
-          id: ruleId++,
+          id: 1,
           priority: 1,
           action: {
             type: chrome.declarativeNetRequest.RuleActionType.REDIRECT,
-            redirect: { extensionPath: `/blocked.html?url=${cleanSite}` }
+            redirect: {
+              regexSubstitution: `chrome-extension://${extId}/blocked.html?url=\\1`
+            }
           },
           condition: {
-            urlFilter: `*://${cleanSite}/*`,
-            resourceTypes: [chrome.declarativeNetRequest.ResourceType.MAIN_FRAME]
-          }
-        });
-
-        // Rule for subdomains (e.g. *.example.com)
-        newRules.push({
-          id: ruleId++,
-          priority: 1,
-          action: {
-            type: chrome.declarativeNetRequest.RuleActionType.REDIRECT,
-            redirect: { extensionPath: `/blocked.html?url=${cleanSite}` }
-          },
-          condition: {
-            urlFilter: `*://*.${cleanSite}/*`,
+            regexFilter: regexFilter,
             resourceTypes: [chrome.declarativeNetRequest.ResourceType.MAIN_FRAME]
           }
         });
@@ -70,7 +56,7 @@ async function syncRules() {
       addRules: newRules
     });
     
-    console.log(`Synced ${newRules.length} blocking rules. Active bypasses:`, Array.from(bypassedDomains));
+    console.log(`Synced dynamic rules. Rule count: ${newRules.length}. Active filters:`, newRules[0]?.condition.regexFilter);
   } catch (error) {
     console.error('Error synchronizing blocking rules:', error);
   }
