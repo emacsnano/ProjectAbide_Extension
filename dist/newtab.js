@@ -1,4 +1,4 @@
-import{c as P,r as o,i as W,j as e,a as Z,R as G}from"./assets/index.js";import{g as K,u as i}from"./assets/storage.js";import{a as j,s as X,b as ee}from"./assets/bible.js";import{S as te,F as se,a as re,C as u,b as z,c as ae}from"./assets/sparkles.js";import{B as E,P as le,T as oe}from"./assets/trash-2.js";import{S as ne}from"./assets/shield-alert.js";/**
+import{c as P,r as o,i as W,j as e,a as Z,R as G}from"./assets/global.js";import{g as K,u as i}from"./assets/storage.js";import{a as j,s as X,b as ee}from"./assets/bible.js";import{S as te,F as se,a as re,C as u,b as z,c as ae}from"./assets/sparkles.js";import{B as E,P as le,T as oe}from"./assets/trash-2.js";import{S as ne}from"./assets/shield-alert.js";/**
  * @license lucide-react v0.400.0 - ISC
  *
  * This source code is licensed under the ISC license.

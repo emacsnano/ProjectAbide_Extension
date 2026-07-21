@@ -1,4 +1,4 @@
-import{c as n,r as t,i as v,j as e,a as S,R as B}from"./assets/index.js";import{g as M,a as C}from"./assets/storage.js";import{g as R}from"./assets/bible.js";/**
+import{c as n,r as t,i as v,j as e,a as S,R as B}from"./assets/global.js";import{g as M,a as C}from"./assets/storage.js";import{g as R}from"./assets/bible.js";/**
  * @license lucide-react v0.400.0 - ISC
  *
  * This source code is licensed under the ISC license.

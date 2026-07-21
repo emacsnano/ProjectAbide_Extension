@@ -1,4 +1,4 @@
-import{c as o,r as d,i as R,j as e,b as $,a as V,R as L}from"./assets/index.js";import{g as I,u as i}from"./assets/storage.js";import{S as F,c as N,a as k,C as H,b as Y,F as q}from"./assets/sparkles.js";import{B as v,P as G,T as w}from"./assets/trash-2.js";/**
+import{c as o,r as d,i as R,j as e,b as $,a as V,R as L}from"./assets/global.js";import{g as I,u as i}from"./assets/storage.js";import{S as F,c as N,a as k,C as H,b as Y,F as q}from"./assets/sparkles.js";import{B as v,P as G,T as w}from"./assets/trash-2.js";/**
  * @license lucide-react v0.400.0 - ISC
  *
  * This source code is licensed under the ISC license.

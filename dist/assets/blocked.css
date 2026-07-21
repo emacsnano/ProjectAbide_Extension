@@ -1,0 +1,1 @@
+@keyframes breathe{0%{transform:scale(1);opacity:.8;box-shadow:0 0 #4c644433}50%{transform:scale(1.05);opacity:1;box-shadow:0 0 0 15px #4c644400}to{transform:scale(1);opacity:.8;box-shadow:0 0 #4c644400}}.animate-breathe{animation:breathe 5s ease-in-out infinite}
