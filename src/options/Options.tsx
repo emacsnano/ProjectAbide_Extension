@@ -5,7 +5,7 @@ import {
   CheckSquare, Award, Flame, Hourglass, Globe, Heart,
   Database, Download, HardDrive, RefreshCw, AlertCircle,
   Layout, HeartHandshake, Search, BookOpen,
-  Image, Upload, Sliders, X
+  Image, Upload, Sliders
 } from 'lucide-react';
 import {
   getSettings, updateSettings, ExtensionSettings,
@@ -688,7 +688,7 @@ export default function Options() {
                     {/* Active Wallpaper Preview & Controls */}
                     {settings.customWallpaper ? (
                       <div className="flex flex-col gap-3">
-                        <div className="relative w-full h-32 rounded-lg overflow-hidden border border-border-color shadow-inner group">
+                        <div className="relative w-full h-44 rounded-lg overflow-hidden border border-border-color shadow-inner">
                           <img 
                             src={settings.customWallpaper} 
                             alt="Custom Wallpaper Preview" 
@@ -703,13 +703,6 @@ export default function Options() {
                               "Trust in Jehovah with all thy heart..."
                             </span>
                           </div>
-                          <button
-                            onClick={handleClearWallpaper}
-                            className="absolute top-2 right-2 p-1.5 rounded-full bg-red-600 text-white hover:bg-red-700 transition-all opacity-80 group-hover:opacity-100 cursor-pointer shadow-md"
-                            title="Remove Custom Wallpaper"
-                          >
-                            <X className="h-3.5 w-3.5" />
-                          </button>
                         </div>
 
                         {/* Dark Overlay Slider */}
@@ -733,6 +726,28 @@ export default function Options() {
                           <span className="text-text-tertiary" style={{ fontSize: '9px' }}>
                             Increase overlay darkness to ensure scripture text is always readable over bright wallpapers.
                           </span>
+                        </div>
+
+                        {/* Change / Remove Buttons */}
+                        <div className="flex gap-2 pt-2 border-t border-border-color border-opacity-40">
+                          <label className="btn btn-secondary py-2 text-xs flex-1 flex items-center justify-center gap-1.5 cursor-pointer">
+                            <Upload className="h-3.5 w-3.5 text-primary-moss" />
+                            <span>Change Image</span>
+                            <input 
+                              type="file" 
+                              accept="image/*"
+                              onChange={handleWallpaperUpload}
+                              className="hidden"
+                            />
+                          </label>
+
+                          <button
+                            onClick={handleClearWallpaper}
+                            className="btn py-2 text-xs text-red-500 border border-red-500 border-opacity-30 hover:bg-red-500 hover:bg-opacity-10 flex items-center justify-center gap-1.5 cursor-pointer flex-1"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                            <span>Remove Wallpaper</span>
+                          </button>
                         </div>
                       </div>
                     ) : (
