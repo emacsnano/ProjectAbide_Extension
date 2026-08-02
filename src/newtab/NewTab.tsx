@@ -20,6 +20,7 @@ export default function NewTab() {
   const [dailyVerse, setDailyVerse] = useState<Verse>({ reference: '', verse: '' });
   const [isDailyBookmarked, setIsDailyBookmarked] = useState(false);
   const [copiedDaily, setCopiedDaily] = useState(false);
+  const [isVerseHovered, setIsVerseHovered] = useState(false);
   
   // Search tab state
   const [searchQuery, setSearchQuery] = useState('');
@@ -287,38 +288,55 @@ export default function NewTab() {
 
       {/* Centered Scripture Section */}
       <main className="flex-grow flex flex-col justify-center items-center w-full max-w-4xl mx-auto my-6 px-6 z-10 animate-fade-in">
-        <div className="text-center mb-4">
+        <div className="text-center mb-3">
           <span className="text-xs font-semibold tracking-widest text-primary-moss uppercase">Verse of the Day</span>
         </div>
-        <blockquote className="text-center font-serif text-xl md:text-3xl leading-relaxed max-w-2xl mx-auto mb-6 text-primary">
-          "{dailyVerse.verse}"
-        </blockquote>
-        <cite className="text-center not-italic font-display text-sm md:text-base text-accent-gold font-medium mb-8 flex items-center justify-center gap-2">
-          <span>— {dailyVerse.reference}</span>
-          {settings && (
-            <span className="badge-translation">
-              {settings.translation || 'NIV'}
-            </span>
-          )}
-        </cite>
 
-        <div className="flex gap-3 justify-center mb-12">
-          <button 
-            onClick={() => handleCopyText(dailyVerse, 'daily')} 
-            className="btn btn-secondary text-xs"
-          >
-            {copiedDaily ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />}
-            {copiedDaily ? 'Copied' : 'Copy'}
-          </button>
-          
-          <button 
-            onClick={() => handleToggleBookmark(dailyVerse)} 
-            className={`btn ${isDailyBookmarked ? 'btn-gold' : 'btn-secondary'} text-xs`}
-          >
-            <Bookmark className="h-3.5 w-3.5 fill-current" />
-            {isDailyBookmarked ? 'Bookmarked' : 'Bookmark'}
-          </button>
+        {/* Hover Container for Verse & Floating Actions */}
+        <div 
+          onMouseEnter={() => setIsVerseHovered(true)}
+          onMouseLeave={() => setIsVerseHovered(false)}
+          className="relative text-center max-w-2xl mx-auto py-2 px-6 rounded-2xl transition-all"
+        >
+          <blockquote className="font-serif text-xl md:text-3xl leading-relaxed text-primary">
+            "{dailyVerse.verse}"
+          </blockquote>
+          <cite className="not-italic font-display text-sm md:text-base text-accent-gold font-medium mt-3 flex items-center justify-center gap-2">
+            <span>— {dailyVerse.reference}</span>
+            {settings && (
+              <span className="badge-translation">
+                {settings.translation || 'NIV'}
+              </span>
+            )}
+          </cite>
+
+          {/* Hover Floating Actions Popup */}
+          {isVerseHovered && (
+            <div className="absolute left-1/2 transform -translate-x-1/2 mt-3 z-20 animate-fade-in" style={{ top: '100%' }}>
+              <div className="flex items-center gap-1.5 p-1.5 rounded-full bg-bg-secondary border border-border-color shadow-xl glass">
+                <button 
+                  onClick={() => handleCopyText(dailyVerse, 'daily')} 
+                  className="btn btn-secondary py-1 px-3 text-xs rounded-full flex items-center gap-1 hover:bg-bg-primary"
+                >
+                  {copiedDaily ? <Check className="h-3.5 w-3.5 text-primary-moss" /> : <Copy className="h-3.5 w-3.5" />}
+                  <span>{copiedDaily ? 'Copied' : 'Copy'}</span>
+                </button>
+                
+                <button 
+                  onClick={() => handleToggleBookmark(dailyVerse)} 
+                  className={`btn py-1 px-3 text-xs rounded-full flex items-center gap-1 ${
+                    isDailyBookmarked ? 'btn-gold' : 'btn-secondary hover:bg-bg-primary'
+                  }`}
+                >
+                  <Bookmark className={`h-3.5 w-3.5 ${isDailyBookmarked ? 'fill-current' : ''}`} />
+                  <span>{isDailyBookmarked ? 'Bookmarked' : 'Bookmark'}</span>
+                </button>
+              </div>
+            </div>
+          )}
         </div>
+
+        <div className="h-10" />
 
         {/* Dashboard Tabs Block */}
         {(settings.showReflectionTab || settings.showSearchTab || settings.showJournalTab) && (
