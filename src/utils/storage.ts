@@ -25,6 +25,9 @@ export interface ExtensionSettings {
   bookmarks: BookmarkedVerse[];
   journal: JournalEntry[];
   focusMinutes: number;
+  showReflectionTab: boolean;
+  showSearchTab: boolean;
+  showJournalTab: boolean;
 }
 
 const DEFAULT_SETTINGS: ExtensionSettings = {
@@ -38,11 +41,14 @@ const DEFAULT_SETTINGS: ExtensionSettings = {
   bookmarks: [],
   journal: [],
   focusMinutes: 0,
+  showReflectionTab: true,
+  showSearchTab: true,
+  showJournalTab: true,
 };
 
 const isExtension = typeof chrome !== 'undefined' && typeof chrome.storage !== 'undefined';
 
-const SYNC_KEYS = ['blockedSites', 'isBlockingEnabled', 'theme', 'translation', 'bypassDuration'];
+const SYNC_KEYS = ['blockedSites', 'isBlockingEnabled', 'theme', 'translation', 'bypassDuration', 'showReflectionTab', 'showSearchTab', 'showJournalTab'];
 const LOCAL_KEYS = ['streak', 'lastNewTabVisit', 'bookmarks', 'journal', 'focusMinutes'];
 
 export async function getSettings(): Promise<ExtensionSettings> {

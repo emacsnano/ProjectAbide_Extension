@@ -8,7 +8,7 @@ import {
   getSettings, updateSettings, 
   BookmarkedVerse, ExtensionSettings, JournalEntry 
 } from '../utils/storage';
-import { searchBible, SearchVerse, getAllCategories, getVerseOfTheDay, Verse } from '../utils/bible';
+import { searchBibleAsync, SearchVerse, getAllCategories, getVerseOfTheDay, Verse } from '../utils/bible';
 import { initTheme } from '../utils/theme';
 
 export default function NewTab() {
@@ -138,9 +138,28 @@ export default function NewTab() {
 
   // Run search
   useEffect(() => {
-    const results = searchBible(searchQuery, selectedCategory || undefined);
-    setSearchResults(results);
-  }, [searchQuery, selectedCategory]);
+    let isMounted = true;
+    searchBibleAsync(searchQuery, selectedCategory || undefined, settings?.translation || 'KJV')
+      .then(results => {
+        if (isMounted) setSearchResults(results);
+      });
+    return () => { isMounted = false; };
+  }, [searchQuery, selectedCategory, settings?.translation]);
+
+  // Ensure active tab matches enabled modules
+  useEffect(() => {
+    if (!settings) return;
+    if (activeTab === 'reflection' && !settings.showReflectionTab) {
+      if (settings.showSearchTab) setActiveTab('search');
+      else if (settings.showJournalTab) setActiveTab('journal');
+    } else if (activeTab === 'search' && !settings.showSearchTab) {
+      if (settings.showReflectionTab) setActiveTab('reflection');
+      else if (settings.showJournalTab) setActiveTab('journal');
+    } else if (activeTab === 'journal' && !settings.showJournalTab) {
+      if (settings.showReflectionTab) setActiveTab('reflection');
+      else if (settings.showSearchTab) setActiveTab('search');
+    }
+  }, [settings?.showReflectionTab, settings?.showSearchTab, settings?.showJournalTab, activeTab]);
 
   // Toggle blocker
   const handleToggleBlocker = async () => {
@@ -228,7 +247,7 @@ export default function NewTab() {
   const categories = getAllCategories();
 
   return (
-    <div className="min-h-screen flex flex-col justify-between p-0 relative overflow-hidden">
+    <div className="min-h-screen h-full flex-grow flex flex-col justify-between p-0 relative overflow-hidden">
       {/* Background Calm Gradients */}
       <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-40 dark:opacity-20 z-0">
         <div className="absolute rounded-full bg-primary-moss" style={{ top: '-10%', left: '-10%', width: '50%', height: '50%', filter: 'blur(120px)' }}></div>
@@ -267,7 +286,7 @@ export default function NewTab() {
       </header>
 
       {/* Centered Scripture Section */}
-      <main className="flex-grow flex flex-col justify-center items-center w-full max-w-4xl mx-auto my-12 z-10 animate-fade-in">
+      <main className="flex-grow flex flex-col justify-center items-center w-full max-w-4xl mx-auto my-6 px-6 z-10 animate-fade-in">
         <div className="text-center mb-4">
           <span className="text-xs font-semibold tracking-widest text-primary-moss uppercase">Verse of the Day</span>
         </div>
@@ -302,43 +321,50 @@ export default function NewTab() {
         </div>
 
         {/* Dashboard Tabs Block */}
-        <div className="w-full max-w-3xl glass rounded-lg border border-border-color shadow-lg overflow-hidden">
-          {/* Tabs header */}
-          <div className="flex border-b border-border-color bg-bg-secondary bg-opacity-50">
-            <button 
-              onClick={() => setActiveTab('reflection')}
-              className={`flex-1 py-3 text-center text-xs font-medium border-b-2 transition-all ${
-                activeTab === 'reflection' 
-                  ? 'border-primary-moss text-primary-moss font-semibold' 
-                  : 'border-transparent text-text-secondary hover:text-text-primary'
-              }`}
-            >
-              Reflection
-            </button>
-            <button 
-              onClick={() => setActiveTab('search')}
-              className={`flex-1 py-3 text-center text-xs font-medium border-b-2 transition-all ${
-                activeTab === 'search' 
-                  ? 'border-primary-moss text-primary-moss font-semibold' 
-                  : 'border-transparent text-text-secondary hover:text-text-primary'
-              }`}
-            >
-              Bible Search
-            </button>
-            <button 
-              onClick={() => setActiveTab('journal')}
-              className={`flex-1 py-3 text-center text-xs font-medium border-b-2 transition-all ${
-                activeTab === 'journal' 
-                  ? 'border-primary-moss text-primary-moss font-semibold' 
-                  : 'border-transparent text-text-secondary hover:text-text-primary'
-              }`}
-            >
-              Prayer Journal
-            </button>
-          </div>
+        {(settings.showReflectionTab || settings.showSearchTab || settings.showJournalTab) && (
+          <div className="w-full max-w-3xl glass rounded-lg border border-border-color shadow-lg overflow-hidden">
+            {/* Tabs header */}
+            <div className="flex border-b border-border-color bg-bg-secondary bg-opacity-50">
+              {settings.showReflectionTab && (
+                <button 
+                  onClick={() => setActiveTab('reflection')}
+                  className={`flex-1 py-3 text-center text-xs font-medium border-b-2 transition-all ${
+                    activeTab === 'reflection' 
+                      ? 'border-primary-moss text-primary-moss font-semibold' 
+                      : 'border-transparent text-text-secondary hover:text-text-primary'
+                  }`}
+                >
+                  Reflection
+                </button>
+              )}
+              {settings.showSearchTab && (
+                <button 
+                  onClick={() => setActiveTab('search')}
+                  className={`flex-1 py-3 text-center text-xs font-medium border-b-2 transition-all ${
+                    activeTab === 'search' 
+                      ? 'border-primary-moss text-primary-moss font-semibold' 
+                      : 'border-transparent text-text-secondary hover:text-text-primary'
+                  }`}
+                >
+                  Bible Search
+                </button>
+              )}
+              {settings.showJournalTab && (
+                <button 
+                  onClick={() => setActiveTab('journal')}
+                  className={`flex-1 py-3 text-center text-xs font-medium border-b-2 transition-all ${
+                    activeTab === 'journal' 
+                      ? 'border-primary-moss text-primary-moss font-semibold' 
+                      : 'border-transparent text-text-secondary hover:text-text-primary'
+                  }`}
+                >
+                  Prayer Journal
+                </button>
+              )}
+            </div>
 
-          {/* Tab content area */}
-          <div className="p-6" style={{ minHeight: '220px' }}>
+            {/* Tab content area */}
+            <div className="p-6" style={{ minHeight: '220px' }}>
             
             {/* Tab 1: Reflection */}
             {activeTab === 'reflection' && (
@@ -538,10 +564,11 @@ export default function NewTab() {
 
           </div>
         </div>
+        )}
       </main>
 
       {/* Bottom Control Bar */}
-      <footer className="w-full z-10 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs border-t border-border-color px-8 py-6 text-text-secondary">
+      <footer className="w-full mt-auto z-10 flex flex-col sm:flex-row justify-between items-center gap-4 text-xs border-t border-border-color px-8 py-6 text-text-secondary">
         <div className="flex items-center gap-3">
           <button 
             onClick={handleToggleBlocker} 
