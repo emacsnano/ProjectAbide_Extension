@@ -28,6 +28,8 @@ export interface ExtensionSettings {
   showReflectionTab: boolean;
   showSearchTab: boolean;
   showJournalTab: boolean;
+  customWallpaper: string; // base64 or url or ''
+  wallpaperOverlay: number; // 0 to 0.8
 }
 
 const DEFAULT_SETTINGS: ExtensionSettings = {
@@ -44,12 +46,14 @@ const DEFAULT_SETTINGS: ExtensionSettings = {
   showReflectionTab: true,
   showSearchTab: true,
   showJournalTab: true,
+  customWallpaper: '',
+  wallpaperOverlay: 0.4,
 };
 
 const isExtension = typeof chrome !== 'undefined' && typeof chrome.storage !== 'undefined';
 
 const SYNC_KEYS = ['blockedSites', 'isBlockingEnabled', 'theme', 'translation', 'bypassDuration', 'showReflectionTab', 'showSearchTab', 'showJournalTab'];
-const LOCAL_KEYS = ['streak', 'lastNewTabVisit', 'bookmarks', 'journal', 'focusMinutes'];
+const LOCAL_KEYS = ['streak', 'lastNewTabVisit', 'bookmarks', 'journal', 'focusMinutes', 'customWallpaper', 'wallpaperOverlay'];
 
 export async function getSettings(): Promise<ExtensionSettings> {
   if (isExtension) {

@@ -4,7 +4,8 @@ import {
   Copy, Check, Sun, Moon, Monitor, Sparkles,
   CheckSquare, Award, Flame, Hourglass, Globe, Heart,
   Database, Download, HardDrive, RefreshCw, AlertCircle,
-  Layout, HeartHandshake, Search, BookOpen
+  Layout, HeartHandshake, Search, BookOpen,
+  Image, Upload, Sliders, X
 } from 'lucide-react';
 import {
   getSettings, updateSettings, ExtensionSettings,
@@ -170,6 +171,39 @@ export default function Options() {
     setSettings(updated);
   };
 
+  // Wallpaper Handlers
+  const handleWallpaperUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 8 * 1024 * 1024) {
+      alert('Image file size should be less than 8MB.');
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = async (event) => {
+      const base64Url = event.target?.result as string;
+      if (base64Url && settings) {
+        const updated = await updateSettings({ customWallpaper: base64Url });
+        setSettings(updated);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const handleClearWallpaper = async () => {
+    if (!settings) return;
+    const updated = await updateSettings({ customWallpaper: '' });
+    setSettings(updated);
+  };
+
+  const handleOverlayChange = async (val: number) => {
+    if (!settings) return;
+    const updated = await updateSettings({ wallpaperOverlay: val });
+    setSettings(updated);
+  };
+
   // Change Bypass duration minutes
   const handleDurationChange = async (minutes: number) => {
     if (!settings) return;
@@ -191,7 +225,7 @@ export default function Options() {
   const pendingPrayers = totalPrayers - answeredPrayers;
 
   return (
-    <div className="min-h-screen flex flex-col bg-bg-primary relative overflow-hidden">
+    <div className="min-h-screen flex flex-col bg-bg-primary relative overflow-y-auto overflow-x-hidden">
       {/* Background Calm Gradients */}
       <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-20 dark:opacity-10 z-0">
         <div className="absolute rounded-full bg-primary-moss" style={{ top: '-10%', left: '-10%', width: '50%', height: '50%', filter: 'blur(130px)' }}></div>
@@ -637,6 +671,114 @@ export default function Options() {
                         <div className="switch-thumb" />
                       </button>
                     </div>
+                  </div>
+                </div>
+
+                {/* Custom Wallpaper Background */}
+                <div className="flex flex-col gap-3 pt-2 border-t border-border-color mt-2">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold text-text-secondary flex items-center gap-1.5">
+                      <Image className="h-3.5 w-3.5 text-primary-moss" />
+                      Custom Background Wallpaper
+                    </label>
+                    <span className="text-text-tertiary" style={{ fontSize: '10px' }}>Upload your own photo or choose serene presets</span>
+                  </div>
+
+                  <div className="p-4 rounded-lg bg-bg-primary bg-opacity-40 border border-border-color flex flex-col gap-3">
+                    {/* Active Wallpaper Preview & Controls */}
+                    {settings.customWallpaper ? (
+                      <div className="flex flex-col gap-3">
+                        <div className="relative w-full h-32 rounded-lg overflow-hidden border border-border-color shadow-inner group">
+                          <img 
+                            src={settings.customWallpaper} 
+                            alt="Custom Wallpaper Preview" 
+                            className="w-full h-full object-cover"
+                          />
+                          <div 
+                            className="absolute inset-0 bg-black transition-opacity"
+                            style={{ opacity: settings.wallpaperOverlay }}
+                          />
+                          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <span className="text-white text-xs font-serif italic text-center px-4 drop-shadow">
+                              "Trust in Jehovah with all thy heart..."
+                            </span>
+                          </div>
+                          <button
+                            onClick={handleClearWallpaper}
+                            className="absolute top-2 right-2 p-1.5 rounded-full bg-red-600 text-white hover:bg-red-700 transition-all opacity-80 group-hover:opacity-100 cursor-pointer shadow-md"
+                            title="Remove Custom Wallpaper"
+                          >
+                            <X className="h-3.5 w-3.5" />
+                          </button>
+                        </div>
+
+                        {/* Dark Overlay Slider */}
+                        <div className="flex flex-col gap-1.5">
+                          <div className="flex justify-between text-xs text-text-secondary">
+                            <span className="flex items-center gap-1">
+                              <Sliders className="h-3 w-3 text-primary-moss" />
+                              Dark Overlay Opacity
+                            </span>
+                            <span>{Math.round(settings.wallpaperOverlay * 100)}%</span>
+                          </div>
+                          <input 
+                            type="range" 
+                            min="0" 
+                            max="0.8" 
+                            step="0.05"
+                            value={settings.wallpaperOverlay}
+                            onChange={(e) => handleOverlayChange(parseFloat(e.target.value))}
+                            className="w-full accent-primary-moss cursor-pointer"
+                          />
+                          <span className="text-text-tertiary" style={{ fontSize: '9px' }}>
+                            Increase overlay darkness to ensure scripture text is always readable over bright wallpapers.
+                          </span>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex flex-col gap-3">
+                        {/* Upload Button */}
+                        <label className="p-4 rounded-lg border-2 border-dashed border-border-color hover:border-primary-moss transition-all flex flex-col items-center justify-center gap-2 cursor-pointer bg-bg-secondary bg-opacity-30 group">
+                          <Upload className="h-6 w-6 text-primary-moss group-hover:scale-110 transition-transform" />
+                          <span className="text-xs font-medium text-text-primary">Click to Upload Wallpaper Image</span>
+                          <span className="text-text-tertiary" style={{ fontSize: '10px' }}>Supports JPG, PNG, WebP (Max 8MB)</span>
+                          <input 
+                            type="file" 
+                            accept="image/*"
+                            onChange={handleWallpaperUpload}
+                            className="hidden"
+                          />
+                        </label>
+
+                        {/* Preset Wallpapers */}
+                        <div className="flex flex-col gap-1.5 mt-1">
+                          <span className="text-xs text-text-tertiary">Or pick a Serene Preset Wallpaper:</span>
+                          <div className="grid grid-cols-3 gap-2">
+                            {[
+                              { name: 'Misty Forest', url: 'https://images.unsplash.com/photo-1448375240586-882707db888b?auto=format&fit=crop&w=1600&q=80' },
+                              { name: 'Mountain Calm', url: 'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=1600&q=80' },
+                              { name: 'Peaceful Ocean', url: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1600&q=80' }
+                            ].map((preset) => (
+                              <button
+                                key={preset.name}
+                                onClick={async () => {
+                                  if (settings) {
+                                    const updated = await updateSettings({ customWallpaper: preset.url });
+                                    setSettings(updated);
+                                  }
+                                }}
+                                className="relative h-16 rounded-md overflow-hidden border border-border-color group hover:border-accent-gold transition-all cursor-pointer"
+                              >
+                                <img src={preset.url} alt={preset.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                                <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
+                                  <span className="text-white text-xxs font-medium drop-shadow">{preset.name}</span>
+                                </div>
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
 

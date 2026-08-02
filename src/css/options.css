@@ -40,5 +40,8 @@
   .options-sidebar {
     width: 240px;
     flex-shrink: 0;
+    position: sticky;
+    top: 3rem;
+    align-self: flex-start;
   }
 }

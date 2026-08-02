@@ -249,11 +249,25 @@ export default function NewTab() {
 
   return (
     <div className="min-h-screen h-full flex-grow flex flex-col justify-between p-0 relative overflow-hidden">
-      {/* Background Calm Gradients */}
-      <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-40 dark:opacity-20 z-0">
-        <div className="absolute rounded-full bg-primary-moss" style={{ top: '-10%', left: '-10%', width: '50%', height: '50%', filter: 'blur(120px)' }}></div>
-        <div className="absolute rounded-full bg-accent-gold" style={{ bottom: '-10%', right: '-10%', width: '50%', height: '50%', filter: 'blur(120px)' }}></div>
-      </div>
+      {/* Custom Wallpaper Background or Calm Gradients */}
+      {settings.customWallpaper ? (
+        <div className="absolute inset-0 z-0 overflow-hidden pointer-events-none">
+          <img 
+            src={settings.customWallpaper} 
+            alt="Custom Background" 
+            className="w-full h-full object-cover fixed inset-0"
+          />
+          <div 
+            className="absolute inset-0 bg-black transition-opacity" 
+            style={{ opacity: settings.wallpaperOverlay ?? 0.4 }}
+          />
+        </div>
+      ) : (
+        <div className="absolute top-0 left-0 w-full h-full pointer-events-none opacity-40 dark:opacity-20 z-0">
+          <div className="absolute rounded-full bg-primary-moss" style={{ top: '-10%', left: '-10%', width: '50%', height: '50%', filter: 'blur(120px)' }}></div>
+          <div className="absolute rounded-full bg-accent-gold" style={{ bottom: '-10%', right: '-10%', width: '50%', height: '50%', filter: 'blur(120px)' }}></div>
+        </div>
+      )}
 
       {/* Top Navigation */}
       <header className="flex justify-between items-center w-full z-10 px-8 py-6">
@@ -271,7 +285,7 @@ export default function NewTab() {
           </div>
           
           <button 
-            className="btn btn-secondary p-2 rounded-full"
+            className="p-2 rounded-full text-text-secondary hover:text-text-primary bg-bg-primary bg-opacity-20 hover:bg-opacity-50 backdrop-blur-sm border border-border-color border-opacity-30 transition-all cursor-pointer"
             onClick={() => {
               if (typeof chrome !== 'undefined' && chrome.runtime && chrome.runtime.openOptionsPage) {
                 chrome.runtime.openOptionsPage();
@@ -281,7 +295,7 @@ export default function NewTab() {
             }}
             title="Open Settings"
           >
-            <Settings className="h-4 w-4" />
+            <Settings className="h-4.5 w-4.5" />
           </button>
         </div>
       </header>
@@ -313,23 +327,25 @@ export default function NewTab() {
           {/* Hover Floating Actions Popup */}
           {isVerseHovered && (
             <div className="absolute left-1/2 transform -translate-x-1/2 mt-3 z-20 animate-fade-in" style={{ top: '100%' }}>
-              <div className="flex items-center gap-1.5 p-1.5 rounded-full bg-bg-secondary border border-border-color shadow-xl glass">
+              <div className="flex items-center gap-1 p-1 rounded-full bg-bg-primary bg-opacity-30 border border-border-color border-opacity-30 backdrop-blur-md shadow-lg">
                 <button 
                   onClick={() => handleCopyText(dailyVerse, 'daily')} 
-                  className="btn btn-secondary py-1 px-3 text-xs rounded-full flex items-center gap-1 hover:bg-bg-primary"
+                  className="p-2 rounded-full text-text-secondary hover:text-text-primary hover:bg-bg-primary hover:bg-opacity-50 transition-all cursor-pointer bg-transparent border-none flex items-center justify-center"
+                  title={copiedDaily ? 'Copied to Clipboard!' : 'Copy Verse'}
                 >
-                  {copiedDaily ? <Check className="h-3.5 w-3.5 text-primary-moss" /> : <Copy className="h-3.5 w-3.5" />}
-                  <span>{copiedDaily ? 'Copied' : 'Copy'}</span>
+                  {copiedDaily ? <Check className="h-4 w-4 text-primary-moss stroke-[2.5]" /> : <Copy className="h-4 w-4" />}
                 </button>
                 
                 <button 
                   onClick={() => handleToggleBookmark(dailyVerse)} 
-                  className={`btn py-1 px-3 text-xs rounded-full flex items-center gap-1 ${
-                    isDailyBookmarked ? 'btn-gold' : 'btn-secondary hover:bg-bg-primary'
+                  className={`p-2 rounded-full transition-all cursor-pointer bg-transparent border-none flex items-center justify-center ${
+                    isDailyBookmarked 
+                      ? 'text-accent-gold hover:text-accent-gold' 
+                      : 'text-text-secondary hover:text-text-primary hover:bg-bg-primary hover:bg-opacity-50'
                   }`}
+                  title={isDailyBookmarked ? 'Bookmarked' : 'Bookmark Verse'}
                 >
-                  <Bookmark className={`h-3.5 w-3.5 ${isDailyBookmarked ? 'fill-current' : ''}`} />
-                  <span>{isDailyBookmarked ? 'Bookmarked' : 'Bookmark'}</span>
+                  <Bookmark className={`h-4 w-4 ${isDailyBookmarked ? 'fill-current' : ''}`} />
                 </button>
               </div>
             </div>
